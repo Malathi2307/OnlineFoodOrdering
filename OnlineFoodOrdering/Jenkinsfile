@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Users\\MALATHI\\AppData\\Local\\Programs\\Python\\Python315\\python.exe'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,7 +16,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('OnlineFoodOrdering') {
-                    bat 'python -m pip install -r requirements.txt'
+                    bat '"%PYTHON%" -m pip install -r requirements.txt'
                 }
             }
         }
@@ -20,7 +24,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('OnlineFoodOrdering') {
-                    bat 'python -m compileall .'
+                    bat '"%PYTHON%" -m compileall .'
                 }
             }
         }
@@ -28,7 +32,7 @@ pipeline {
         stage('Automated Testing') {
             steps {
                 dir('OnlineFoodOrdering') {
-                    bat 'python -m pytest --junitxml=test-results.xml'
+                    bat '"%PYTHON%" -m pytest --junitxml=test-results.xml'
                 }
             }
         }
@@ -44,7 +48,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 dir('OnlineFoodOrdering') {
-                    bat 'start "" /B python app.py'
+                    bat 'start "" /B "%PYTHON%" app.py'
                 }
             }
         }
