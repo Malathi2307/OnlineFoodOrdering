@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Source code checked out from GitHub'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('OnlineFoodOrdering') {
+                    bat 'python -m pip install -r requirements.txt'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('OnlineFoodOrdering') {
+                    bat 'python -m compileall .'
+                }
+            }
+        }
+
+        stage('Automated Testing') {
+            steps {
+                dir('OnlineFoodOrdering') {
+                    bat 'python -m pytest --junitxml=test-results.xml'
+                }
+            }
+        }
+
+        stage('Generate Test Report') {
+            steps {
+                dir('OnlineFoodOrdering') {
+                    junit 'test-results.xml'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir('OnlineFoodOrdering') {
+                    bat 'start "" /B python app.py'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI/CD Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'CI/CD Pipeline failed. Check the console output.'
+        }
+    }
+}
